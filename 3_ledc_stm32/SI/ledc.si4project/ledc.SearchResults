@@ -1,0 +1,12 @@
+---- MCIMX6Y2 Matches (11 in 1 files) ----
+MCIMX6Y2.h line 3 : **     Processors:          MCIMX6Y2CVM05
+MCIMX6Y2.h line 4 : **                          MCIMX6Y2CVM08
+MCIMX6Y2.h line 5 : **                          MCIMX6Y2DVM05
+MCIMX6Y2.h line 6 : **                          MCIMX6Y2DVM09
+MCIMX6Y2.h line 17 : **         CMSIS Peripheral Access Layer for MCIMX6Y2
+MCIMX6Y2.h line 61 :  * @file MCIMX6Y2.h
+MCIMX6Y2.h line 64 :  * @brief CMSIS Peripheral Access Layer for MCIMX6Y2
+MCIMX6Y2.h line 66 :  * CMSIS Peripheral Access Layer for MCIMX6Y2
+MCIMX6Y2.h line 69 : #ifndef _MCIMX6Y2_H_
+MCIMX6Y2.h line 70 : #define _MCIMX6Y2_H_                             /**< Symbol preventing repeated inclusion */
+MCIMX6Y2.h line 42152 : #endif  /* _MCIMX6Y2_H_ */

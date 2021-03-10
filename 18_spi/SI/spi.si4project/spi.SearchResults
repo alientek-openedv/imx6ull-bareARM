@@ -1,0 +1,8 @@
+---- number( Matches (7 in 2 files) ----
+vsprintf.c (stdio\lib) line 160 : //static char * number(char * buf, char * end, unsigned long long num, int base, int size, int precision, int type)
+vsprintf.c (stdio\lib) line 251 : static char *number(char *buf, char *end, signed long long num, int base, int size, int precision, int type)
+vsprintf.c (stdio\lib) line 354 : static char * number(char * buf, char * end, unsigned long long num, int base, int size, int precision, int type)
+vsnprintf in vsprintf.c (stdio\lib) : 	int flags;		/* flags to number() */
+vsnprintf in vsprintf.c (stdio\lib) : 				str = number(str, end,
+vsnprintf in vsprintf.c (stdio\lib) : 		str = number(str, end, num, base,
+vsprintf.h (stdio\lib) line 40 : //char * number(char * buf, char * end, long long num, int base, int size, int precision, int type);

@@ -1,0 +1,59 @@
+#include "bsp_exit.h"
+#include "bsp_gpio.h"
+#include "bsp_int.h"
+#include "bsp_led.h"
+
+/*
+ * IMX6UL 外部中断驱动文件
+ * 作者:左忠凯
+ */
+
+/*
+ * 初始化外部中断
+ * KEY2 ->	GPIO1_IO02
+ */
+void exit_init(void)
+{
+	gpio_pin_config_t key_config;
+
+	/* 1、设置IO复用 */
+	IOMUXC_SetPinMux(IOMUXC_GPIO1_IO02_GPIO1_IO02,0);			/* 复用为GPIO1_IO02 */
+	IOMUXC_SetPinConfig(IOMUXC_GPIO1_IO02_GPIO1_IO02,0xF080);
+
+	/* 2、初始化GPIO为中断模式 */
+	key_config.direction = kGPIO_DigitalInput;
+	key_config.interruptMode = kGPIO_IntFallingEdge;
+	key_config.outputLogic = 1;
+	gpio_init(GPIO1,2, &key_config);
+
+	GIC_EnableIRQ(GPIO1_Combined_0_15_IRQn);					//使能GIC中对应的中断
+	system_register_irqhandler(GPIO1_Combined_0_15_IRQn, (system_irq_handler_t)gpio1_io02_irqhandler, NULL);	//注册中断服务函数
+	gpio_enableint(GPIO1, 1 << 2);	//使能GPIO1_IO02的中断功能
+}
+
+
+void gpio1_io02_irqhandler(void)
+{ 
+
+	static unsigned char state = 0;
+#if 0
+	state = !state;
+	led_switch(LED2, state);
+#endif
+
+	//采用延时消抖，中断服务函数中禁止使用延时函数！因为中断服务需要
+	//快进快出！！这里为了演示所以采用了延时函数进行消抖，后面我们会讲解
+	//定时器中断消抖法！！！
+
+	delay(10);
+	if(gpio_pinread(GPIO1, 2) == 0)	//按键按下了
+	{
+		state = !state;
+		led_switch(LED2, state);
+	}
+	
+	gpio_clearintflags(GPIO1, 1 << 2); /* 清除中断标志位 */
+}
+
+
+
