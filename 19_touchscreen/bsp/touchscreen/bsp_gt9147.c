@@ -56,7 +56,12 @@ void gt9147_init(void)
 	gpio_pin_config_t ctintpin_config;
 	gpio_pin_config_t ctretpin_config;
 	gt9147_dev.initfalg = GT9147_INIT_NOTFINISHED;
-
+	int i;
+	for( i = 0; i < 5; i++ )
+	{	/* 避免编译器自动赋值 */
+		gt9147_dev.x[i] = 0;
+		gt9147_dev.y[i] = 0;
+	}
 	/* 1、初始化IIC2 IO
      * I2C2_SCL -> UART5_TXD
      * I2C2_SDA -> UART5_RXD
@@ -118,10 +123,15 @@ void gt9147_init(void)
     temp[4] = 0;
 	printf("CTP ID:%s\r\n", temp);	    /* 打印ID */
 	gt9147_write_byte(GT9147_ADDR, GT_CTRL_REG, 0x02);
-	regvalue = gt9147_read_byte(GT9147_ADDR, GT_CFGS_REG);
+	if(temp[0]=='1')	/* 1151不需要更新固件这里做区分 */
+		regvalue = gt9147_read_byte(GT9147_ADDR, GT1151_CFGS_REG);
+	else
+	{	
+		regvalue = gt9147_read_byte(GT9147_ADDR, GT_CFGS_REG);
+		gt9147_send_cfg(0);/* 配置GT9147 */
+		delayms(10); 
+	}
 	printf("Default Ver:%#x\r\n",regvalue);
-	gt9147_send_cfg(0);/* 配置GT9147 */
-	delayms(10); 
 	gt9147_write_byte(GT9147_ADDR, GT_CTRL_REG, 0);	
 
 	GIC_EnableIRQ(GPIO1_Combined_0_15_IRQn);				/* 使能GIC中对应的中断 */
@@ -276,13 +286,12 @@ void gt9147_read_tpcoord(void)
 
 	regvalue = gt9147_read_byte(GT9147_ADDR, GT_GSTID_REG);
 	gt9147_write_byte(GT9147_ADDR, GT_GSTID_REG, 0x00);
-
-	/* 读取5点触摸坐标值 */
-	for(i = 0; i < 5; i++)
+	gt9147_dev.point_num = regvalue & 0XF; /* 计算读取了多少个点 */
+	/* 读取当前所有的触摸坐标值 */
+	for(i = 0; i < gt9147_dev.point_num; i++)
 	{
 		gt9147_read_len(GT9147_ADDR, GT9147_TPX_TBL[i], 4, buf);	/* 读取坐标值 */
 		gt9147_dev.x[i] = ((u16)buf[1] << 8) + buf[0];
 		gt9147_dev.y[i] = (((u16)buf[3] << 8) + buf[2]);				
 	} 
-	gt9147_dev.point_num = regvalue & 0XF;
 }
